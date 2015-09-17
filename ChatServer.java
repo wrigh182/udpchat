@@ -43,34 +43,63 @@ class UDPServer {
 		  
           String sentence = new String(receivePacketRed.getData());
 		  
-		  if (sentence.equals("Hello"))
-		  {
-			if (IPAddressRed == NULL)
+		  
+			if (portRed == 0 && sentence.equals("Hello"))
 			{
+				
 				IPAddressRed = receivePacket.getAddress();
 				portRed = receivePacket.getPort();
+
+				sentence = "You have joined the chat.";
+				if (portBlue != 0)
+				{
+					sentence += "\nOther participant is waiting."
+				}
+				else
+				{
+					sentence += "\nWaiting for other participant to join."
+				}
+
+				sendData = sentence.getBytes();
+	      		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+	      		serverSocket.send(sendPacket);
 			}
-			else if (IPAddressBlue == NULL)
+			else if (portBlue == 0 && sentence.equals("Hello"))
 			{
 				IPAddressBlue = receivePacket.getAddress();
 				portBlue = receivePacket.getPort();
+
+				sentence = "You have joined the chat.";
+				if (portRed != 0)
+				{
+					sentence += "\nOther participant is waiting."
+				}
+				else
+				{
+					sentence += "\nWaiting for other participant to join."
+				}
+
+				sendData = sentence.getBytes();
+	      		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+	      		serverSocket.send(sendPacket);
 			}
-		  }
-		  
-		  else
-		  {
+			 
 			  
-		  }
-
-    
-		  
-		  System.out.println("from client: " + capitalizedSentence);
-
-          sendData = capitalizedSentence.getBytes();
-
-          DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-
-          serverSocket.send(sendPacket);
+			else
+			{
+				if (receivePacket.getAddress() == IPAddressRed && receivePacket.getPort() == portRed)
+				{
+					sendData = sentence.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					serverSocket.send(sendPacket);
+				}
+				else if (receivePacket.getAddress() == IPAddressBlue && receivePacket.getPort() == portBlue)
+				{
+					sendData = sentence.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					serverSocket.send(sendPacket);
+				}
+			}
         }
     }
 }
