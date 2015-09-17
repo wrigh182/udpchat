@@ -50,14 +50,14 @@ class UDPServer {
 				IPAddressRed = receivePacket.getAddress();
 				portRed = receivePacket.getPort();
 
-				sentence = "You have joined the chat.";
+				sentence = "YOU HAVE JOINED THE CHAT.";
 				if (portBlue != 0)
 				{
-					sentence += "\nOther participant is waiting."
+					sentence += "\nOTHER PARTICIPANT IS WAITING."
 				}
 				else
 				{
-					sentence += "\nWaiting for other participant to join."
+					sentence += "\nWAITING FOR OTHER PARTICIPANT TO JOIN."
 				}
 
 				sendData = sentence.getBytes();
@@ -69,21 +69,53 @@ class UDPServer {
 				IPAddressBlue = receivePacket.getAddress();
 				portBlue = receivePacket.getPort();
 
-				sentence = "You have joined the chat.";
+				sentence = "YOU HAVE JOINED THE CHAT.";
 				if (portRed != 0)
 				{
-					sentence += "\nOther participant is waiting."
+					sentence += "\nOTHER PARTICIPANT IS WAITING."
 				}
 				else
 				{
-					sentence += "\nWaiting for other participant to join."
+					sentence += "\nWAITING FOR OTHER PARTICIPANT TO JOIN."
 				}
 
 				sendData = sentence.getBytes();
 	      		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
 	      		serverSocket.send(sendPacket);
 			}
-			 
+			else if (sentence.equals("Goodbye"))
+			{
+				if (receivePacket.getAddress() == IPAddressRed && receivePacket.getPort() == portRed)
+				{
+					sentence = "YOU HAVE EXITED THE CHAT.";
+					sendData = sentence.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					serverSocket.send(sendPacket);
+
+					sentence = "THE OTHER PARTICIPANT HAS EXITIED THE CHAT.";
+					sendData = sentence.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					serverSocket.send(sendPacket);
+
+					IPAddressRed = null;
+					portRed = 0;
+				}
+				else if (receivePacket.getAddress() == IPAddressBlue && receivePacket.getPort() == portBlue)
+				{
+					sentence = "YOU HAVE EXITED THE CHAT.";
+					sendData = sentence.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					serverSocket.send(sendPacket);
+
+					sentence = "THE OTHER PARTICIPANT HAS EXITIED THE CHAT.";
+					sendData = sentence.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					serverSocket.send(sendPacket);
+
+					IPAddressBlue = null;
+					portBlue = 0;
+				}
+			}			 
 			  
 			else
 			{
