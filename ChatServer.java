@@ -11,15 +11,17 @@
 import java.io.*;
 import java.net.*;
 
-class UDPServer {
+class ChatServer {
 	
   public static void main(String args[]) throws Exception
     {
     DatagramSocket serverSocket = null;
 	int portRed = 0;
 	int portBlue = 0;
-	InetAddress IPAddressRed;
-	InetAddress IPAddressBlue;
+	InetAddress IPAddressRed = InetAddress.getByName("0");
+	InetAddress IPAddressBlue = InetAddress.getByName("0");
+	String sentence;
+	DatagramPacket sendPacket;
 	  
 	try
 		{
@@ -41,46 +43,47 @@ class UDPServer {
 		  
           serverSocket.receive(receivePacket);
 		  
-          String sentence = new String(receivePacketRed.getData());
+          sentence = new String(receivePacket.getData());
+		  System.out.println(sentence);
 		  
-		  
-			if (portRed == 0 && sentence.equals("Hello"))
+			if (portRed == 0)
 			{
-				
+				System.out.println("New Red");	
 				IPAddressRed = receivePacket.getAddress();
 				portRed = receivePacket.getPort();
 
 				sentence = "YOU HAVE JOINED THE CHAT.";
 				if (portBlue != 0)
 				{
-					sentence += "\nOTHER PARTICIPANT IS WAITING."
+					sentence += "\nOTHER PARTICIPANT IS WAITING.";
 				}
 				else
 				{
-					sentence += "\nWAITING FOR OTHER PARTICIPANT TO JOIN."
+					sentence += "\nWAITING FOR OTHER PARTICIPANT TO JOIN.";
 				}
 
 				sendData = sentence.getBytes();
-	      		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+	      		sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 	      		serverSocket.send(sendPacket);
 			}
-			else if (portBlue == 0 && sentence.equals("Hello"))
+			else if (portBlue == 0)
 			{
+				System.out.println("New Blue");
 				IPAddressBlue = receivePacket.getAddress();
 				portBlue = receivePacket.getPort();
 
 				sentence = "YOU HAVE JOINED THE CHAT.";
 				if (portRed != 0)
 				{
-					sentence += "\nOTHER PARTICIPANT IS WAITING."
+					sentence += "\nOTHER PARTICIPANT IS WAITING.";
 				}
 				else
 				{
-					sentence += "\nWAITING FOR OTHER PARTICIPANT TO JOIN."
+					sentence += "\nWAITING FOR OTHER PARTICIPANT TO JOIN.";
 				}
 
 				sendData = sentence.getBytes();
-	      		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+	      		sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
 	      		serverSocket.send(sendPacket);
 			}
 			else if (sentence.equals("Goodbye"))
@@ -89,46 +92,46 @@ class UDPServer {
 				{
 					sentence = "YOU HAVE EXITED THE CHAT.";
 					sendData = sentence.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 					serverSocket.send(sendPacket);
 
 					sentence = "THE OTHER PARTICIPANT HAS EXITIED THE CHAT.";
 					sendData = sentence.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
 					serverSocket.send(sendPacket);
 
-					IPAddressRed = null;
+					IPAddressRed = InetAddress.getByName("0");
 					portRed = 0;
 				}
 				else if (receivePacket.getAddress() == IPAddressBlue && receivePacket.getPort() == portBlue)
 				{
 					sentence = "YOU HAVE EXITED THE CHAT.";
 					sendData = sentence.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
 					serverSocket.send(sendPacket);
 
 					sentence = "THE OTHER PARTICIPANT HAS EXITIED THE CHAT.";
 					sendData = sentence.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 					serverSocket.send(sendPacket);
 
-					IPAddressBlue = null;
+					IPAddressBlue = InetAddress.getByName("0");
 					portBlue = 0;
 				}
 			}			 
 			  
-			else
+			else if (portBlue != 0 && portRed != 0)
 			{
 				if (receivePacket.getAddress() == IPAddressRed && receivePacket.getPort() == portRed)
 				{
 					sendData = sentence.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
 					serverSocket.send(sendPacket);
 				}
 				else if (receivePacket.getAddress() == IPAddressBlue && receivePacket.getPort() == portBlue)
 				{
 					sendData = sentence.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 					serverSocket.send(sendPacket);
 				}
 			}
