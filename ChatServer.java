@@ -21,8 +21,7 @@ class ChatServer {
 	InetAddress IPAddressRed = InetAddress.getByName("0");
 	InetAddress IPAddressBlue = InetAddress.getByName("0");
 	String sentence;
-	DatagramPacket sendPacket;
-	  
+	System.out.println(sentence);
 	try
 		{
 			serverSocket = new DatagramSocket(9876);
@@ -30,7 +29,6 @@ class ChatServer {
 	
 	catch(Exception e)
 		{
-			System.out.println("Failed to open UDP socket");
 			System.exit(0);
 		}
 
@@ -42,14 +40,12 @@ class ChatServer {
 			// Receive message
           DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
           serverSocket.receive(receivePacket);
-          sentence = new String(receivePacket.getData());
+          sentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
 		  
-		  System.out.println(sentence);
 		  
 			// assign a client to red
 			if (portRed == 0)
 			{
-				System.out.println("New Red");	
 				IPAddressRed = receivePacket.getAddress();
 				portRed = receivePacket.getPort();
 
@@ -58,7 +54,7 @@ class ChatServer {
 				{
 					sentence = "##200##";
 					sendData = sentence.getBytes();
-					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 					serverSocket.send(sendPacket);
 					
 					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
@@ -69,7 +65,7 @@ class ChatServer {
 				{
 					sentence = "##100##";
 					sendData = sentence.getBytes();
-					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 					serverSocket.send(sendPacket);
 				}
 			}
@@ -77,7 +73,6 @@ class ChatServer {
 			// assign a client to blue
 			else if (portBlue == 0)
 			{
-				System.out.println("New Blue");	
 				IPAddressBlue = receivePacket.getAddress();
 				portBlue = receivePacket.getPort();
 				
@@ -86,7 +81,7 @@ class ChatServer {
 				{
 					sentence = "##200##";
 					sendData = sentence.getBytes();
-					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 					serverSocket.send(sendPacket);
 					
 					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
@@ -97,7 +92,7 @@ class ChatServer {
 				{
 					sentence = "##100##";
 					sendData = sentence.getBytes();
-					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
 					serverSocket.send(sendPacket);
 				}
 			}
@@ -108,7 +103,7 @@ class ChatServer {
 				
 				sentence = "##300##";
 				sendData = sentence.getBytes();
-				sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 				serverSocket.send(sendPacket);
 
 				sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
@@ -125,17 +120,17 @@ class ChatServer {
 			else if (portBlue != 0 && portRed != 0)
 			{
 				// If red send to blue
-				if (receivePacket.getAddress() == IPAddressRed && receivePacket.getPort() == portRed)
+				if (receivePacket.getAddress().equals(IPAddressRed) && receivePacket.getPort() == portRed)
 				{
 					sendData = sentence.getBytes();
-					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressBlue, portBlue);
 					serverSocket.send(sendPacket);
 				}
 				// If blue send to red
-				else if (receivePacket.getAddress() == IPAddressBlue && receivePacket.getPort() == portBlue)
+				else if (receivePacket.getAddress().equals(IPAddressBlue) && receivePacket.getPort() == portBlue)
 				{
 					sendData = sentence.getBytes();
-					sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddressRed, portRed);
 					serverSocket.send(sendPacket);
 				}
 			}
